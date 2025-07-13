@@ -8,10 +8,21 @@ use App\Models\Role;
 
 class UserController extends Controller
 {
-    public  function index()
+    public function index(Request $request)
     {
-        $users = User::all();
+        $search = $request->input('search');
+
+        $users = User::with('role')
+            ->when($search, function ($query, $search) {
+                $query->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
+            })
+            ->orderBy('name')
+            ->paginate(10)
+            ->withQueryString();
+
         $roles = Role::all();
+
         return view('pages.user.index', compact('users', 'roles'));
     }
 
@@ -30,6 +41,6 @@ class UserController extends Controller
         $user->role_id = $request->role_id;
         $user->save();
 
-        return redirect()->route('user.index')->with('success', 'User role updated successfully.');
+        return redirect()->route('user.index')->with('success', 'Role Pengguna berhasil diperbarui.');
     }
 }

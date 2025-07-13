@@ -2,15 +2,6 @@
 
 @section('title', 'Users | ')
 
-@push('style')
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
-    <style>
-        #toast-container>.toast {
-            color: #000 !important;
-        }
-    </style>
-@endpush
-
 @section('main')
     <main class="app-main">
         <div class="app-content-header">
@@ -34,53 +25,60 @@
                     <div class="col-md-12">
                         <div class="card">
                             <div class="card-header">
-                                <h3 class="card-title">Striped Full Width Table</h3>
+                                <h3 class="card-title">Daftar Users</h3>
                             </div>
-                            <div class="card-body p-0">
-                                <table class="table table-responsive table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th style="width: 10px">#</th>
-                                            <th>Nama</th>
-                                            <th>Email</th>
-                                            <th>Role</th>
-                                            <th style="width: 40px">Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @forelse ($users as $user)
-                                            <tr class="align-middle">
-                                                <td>{{ $loop->iteration }}.</td>
-                                                <td>{{ $user->name }}</td>
-                                                <td>{{ $user->email }}</td>
-                                                <td>
-                                                    {{ $user->role?->role_name }}
-                                                </td>
-                                                <td>
-                                                    <button type="button" class="btn btn-sm btn-primary"
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target="#roleModal{{ $user->id }}" title="change role">
-                                                        <i class="bi bi-pencil-square"></i>
-                                                    </button>
-                                                </td>
+                            <div class="card-body p-2">
+                                <div class="mb-1 d-flex">
+                                    <form method="GET" action="{{ route('user.index') }}" class="d-flex ms-auto">
+                                        <input type="text" name="search" class="form-control" placeholder="Cari user..."
+                                            value="{{ request('search') }}">
+                                        <button type="submit" class="btn btn-warning"><i class="bi bi-search"></i></button>
+                                    </form>
+                                </div>
 
-                                            @empty
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
                                             <tr>
-                                                <td colspan="5" class="text-center">No users found</td>
+                                                <th style="width: 15px">No</th>
+                                                <th>Nama</th>
+                                                <th>Email</th>
+                                                <th>Role</th>
+                                                <th style="width: 50px">#</th>
                                             </tr>
-                                        @endforelse
+                                        </thead>
+                                        <tbody>
+                                            @forelse ($users as $user)
+                                                <tr class="align-middle">
+                                                    <td>{{ $users->firstItem() + $loop->index }}</td>
+                                                    <td>{{ $user->name }}</td>
+                                                    <td>{{ $user->email }}</td>
+                                                    <td>
+                                                        {{ $user->role?->role_name }}
+                                                    </td>
+                                                    <td>
+                                                        <button type="button" class="btn btn-sm btn-primary"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#roleModal{{ $user->id }}"
+                                                            title="change role">
+                                                            <i class="bi bi-pencil-square"></i>
+                                                        </button>
+                                                    </td>
 
-                                    </tbody>
-                                </table>
+                                                @empty
+                                                <tr>
+                                                    <td colspan="5" class="text-center">No users found</td>
+                                                </tr>
+                                            @endforelse
+
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                             <div class="card-footer clearfix">
-                                <ul class="pagination pagination-sm m-0 float-end">
-                                    <li class="page-item"><a class="page-link" href="#">&laquo;</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">1</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">&raquo;</a></li>
-                                </ul>
+                                <div class="float-end">
+                                    {{ $users->links() }}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -128,24 +126,3 @@
     </main>
 
 @endsection
-
-@push('scripts')
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-
-    <script>
-        $(document).ready(function() {
-            @if (session('success'))
-                toastr.success("{{ session('success') }}", "Sukses!", {
-                    closeButton: true,
-                    progressBar: true
-                });
-            @elseif (session('error'))
-                toastr.error("{{ session('error') }}", "Gagal!", {
-                    closeButton: true,
-                    progressBar: true
-                });
-            @endif
-        });
-    </script>
-@endpush

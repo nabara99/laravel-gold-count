@@ -26,7 +26,13 @@
     @stack('style')
 
     <link rel="stylesheet" href="./css/adminlte.css" />
-    
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+    <style>
+        #toast-container>.toast {
+            color: #000 !important;
+        }
+    </style>
 
 </head>
 
@@ -74,6 +80,25 @@
     </script>
 
     @stack('scripts')
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            @if (session('success'))
+                toastr.success("{{ session('success') }}", "Sukses!", {
+                    closeButton: true,
+                    progressBar: true
+                });
+            @elseif (session('error'))
+                toastr.error("{{ session('error') }}", "Gagal!", {
+                    closeButton: true,
+                    progressBar: true
+                });
+            @endif
+        });
+    </script>
 
 </body>
 <!--end::Body-->

@@ -16,5 +16,5 @@ Route::middleware(['auth'])->group(function () {
     })->name('home');
 });
 
-Route::resource('user', UserController::class);
-Route::post('user/update-role', [UserController::class, 'updateRole'])->name('user.update-role');
+Route::resource('user', UserController::class)->middleware(['auth', 'isAdmin']);
+Route::post('user/update-role', [UserController::class, 'updateRole'])->name('user.update-role')->middleware(['auth', 'isAdmin']);
