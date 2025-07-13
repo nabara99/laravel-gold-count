@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->date('date');
             $table->foreignId('location_id')->constrained()->onDelete('cascade');
-            $table->foreignId('periode_id')->constrained()->onDelete('cascade');
+            $table->foreignId('period_id')->constrained()->onDelete('cascade');
             $table->decimal('qty', 10, 2)->default(0);
             $table->bigInteger('price')->default(0);
             $table->enum('type', ['kredit', 'debit']);
