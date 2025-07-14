@@ -12,6 +12,7 @@ class Absen extends Model
 
     protected $fillable = [
         'worker_id',
+        'location_id',
         'date',
         'status',
     ];
@@ -19,5 +20,10 @@ class Absen extends Model
     public function location()
     {
         return $this->belongsTo(Location::class);
+    }
+
+    public function worker()
+    {
+        return $this->belongsTo(Worker::class);
     }
 }

@@ -9,4 +9,16 @@ class Worker extends Model
 {
     /** @use HasFactory<\Database\Factories\WorkerFactory> */
     use HasFactory;
+
+    protected $fillable = [
+        'name',
+        'location_id',
+        'age',
+        'phone_number',
+    ];
+
+    public function location()
+    {
+        return $this->belongsTo(Location::class);
+    }
 }

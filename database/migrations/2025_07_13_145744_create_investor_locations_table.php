@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('location_id')->constrained()->onDelete('cascade');
+            $table->decimal('amount_invested', 15, 2)->nullable();
             $table->timestamps();
 
             $table->unique(['user_id', 'location_id']);

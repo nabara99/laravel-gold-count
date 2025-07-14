@@ -16,5 +16,15 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->render(function (NotFoundHttpException $e, $request) {
+            return response()->view('errors.404', [], 404);
+        });
+
+        $exceptions->render(function (Throwable $e, $request) {
+            if (app()->environment('production')) {
+                return response()->view('errors.500', [], 500);
+            }
+
+            return null;
+        });
     })->create();

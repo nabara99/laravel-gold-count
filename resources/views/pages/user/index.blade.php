@@ -28,13 +28,18 @@
                                 <h3 class="card-title">Daftar Users</h3>
                             </div>
                             <div class="card-body p-2">
-                                <div class="mb-1 d-flex">
+                                <div class="d-flex">
+                                    <button class="btn btn-success btn-sm" data-bs-toggle="modal"
+                                        data-bs-target="#addUserModal">
+                                        <i class="bi bi-plus-lg"></i> Tambah User
+                                    </button>
                                     <form method="GET" action="{{ route('user.index') }}" class="d-flex ms-auto">
                                         <input type="text" name="search" class="form-control" placeholder="Cari user..."
                                             value="{{ request('search') }}">
                                         <button type="submit" class="btn btn-warning"><i class="bi bi-search"></i></button>
                                     </form>
                                 </div>
+
 
                                 <div class="table-responsive">
                                     <table class="table table-striped">
@@ -44,7 +49,7 @@
                                                 <th>Nama</th>
                                                 <th>Email</th>
                                                 <th>Role</th>
-                                                <th style="width: 50px">#</th>
+                                                <th style="width: 100px">#</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -59,9 +64,8 @@
                                                     <td>
                                                         <button type="button" class="btn btn-sm btn-primary"
                                                             data-bs-toggle="modal"
-                                                            data-bs-target="#roleModal{{ $user->id }}"
-                                                            title="change role">
-                                                            <i class="bi bi-pencil-square"></i>
+                                                            data-bs-target="#editModal{{ $user->id }}"
+                                                            title="edit">Edit
                                                         </button>
                                                     </td>
 
@@ -85,7 +89,7 @@
                 </div>
             </div>
             @foreach ($users as $user)
-                <div class="modal fade" id="roleModal{{ $user->id }}" tabindex="-1" aria-labelledby="exampleModalLabel"
+                <div class="modal fade" id="editModal{{ $user->id }}" tabindex="-1" aria-labelledby="exampleModalLabel"
                     aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
@@ -95,31 +99,94 @@
                                     aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <form action="{{ route('user.update-role') }}" method="POST">
+                                <form action="{{ route('user.update', $user->id) }}" method="POST">
                                     @csrf
+                                    @method('PUT')
                                     <input type="hidden" name="user_id" value="{{ $user->id }}">
-                                    <div>
-                                        <label for="role_id" class="mb-2">Pilih role akses</label>
-                                        <select name="role_id" id="role_id" class="form-control">
-                                            <option value="">{{ $user->role->role_name }}</option>
+
+                                    <div class="mb-2">
+                                        <label>Nama</label>
+                                        <input type="text" name="name" class="form-control"
+                                            value="{{ $user->name }}" required>
+                                    </div>
+
+                                    <div class="mb-2">
+                                        <label>Email</label>
+                                        <input type="email" name="email" class="form-control"
+                                            value="{{ $user->email }}" required>
+                                    </div>
+
+                                    <div class="mb-2">
+                                        <label>Password (biarkan kosong jika tidak ingin mengganti)</label>
+                                        <input type="password" name="password" class="form-control">
+                                    </div>
+
+                                    <div class="mb-2">
+                                        <label>Konfirmasi Password</label>
+                                        <input type="password" name="password_confirmation" class="form-control">
+                                    </div>
+
+                                    <div class="mb-2">
+                                        <label>Role</label>
+                                        <select name="role_id" class="form-control" required>
                                             @foreach ($roles as $role)
                                                 <option value="{{ $role->id }}"
-                                                    @if ($user->role_id == $role->id) disabled @endif>
+                                                    {{ $user->role_id == $role->id ? 'selected' : '' }}>
                                                     {{ $role->role_name }}
                                                 </option>
                                             @endforeach
-
                                         </select>
                                     </div>
-                                    <div class="d-grid gap-2">
-                                        <button type="submit" class="btn btn-primary mt-2">Update</button>
-                                    </div>
+
+                                    <button type="submit" class="btn btn-primary mt-2">Update</button>
                                 </form>
+
                             </div>
                         </div>
                     </div>
                 </div>
             @endforeach
+
+            <!-- Modal Tambah User -->
+            <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <form action="{{ route('user.store') }}" method="POST" class="modal-content">
+                        @csrf
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addUserModalLabel">Tambah User Baru</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-2">
+                                <label>Nama</label>
+                                <input type="text" name="name" class="form-control" required>
+                            </div>
+                            <div class="mb-2">
+                                <label>Email</label>
+                                <input type="email" name="email" class="form-control" required>
+                            </div>
+                            <div class="mb-2">
+                                <label>Password</label>
+                                <input type="password" name="password" class="form-control" required>
+                            </div>
+                            <div class="mb-2">
+                                <label>Role</label>
+                                <select name="role_id" class="form-control" required>
+                                    @foreach ($roles as $role)
+                                        <option value="">-- Pilih role --</option>
+                                        <option value="{{ $role->id }}">{{ $role->role_name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Simpan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
 
         </div>
 

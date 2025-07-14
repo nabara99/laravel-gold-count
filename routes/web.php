@@ -18,3 +18,17 @@ Route::middleware(['auth'])->group(function () {
 
 Route::resource('user', UserController::class)->middleware(['auth', 'isAdmin']);
 Route::post('user/update-role', [UserController::class, 'updateRole'])->name('user.update-role')->middleware(['auth', 'isAdmin']);
+
+Route::get('/locations', function () {
+    return view('pages.locations.index');
+})->name('locations.index')->middleware('auth', 'isAdmin');
+
+Route::get('/workers', function () {
+    return view('pages.workers.index');
+})->name('workers.index')->middleware('auth', 'isAdmin');
+
+Route::get('/absens', function () {
+    return view('pages.absens.index');
+})->name('absens.index')->middleware('auth', 'isAdmin');
+
+

@@ -30,6 +30,33 @@
                             </p>
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a href="{{ route('locations.index') }}"
+                            class="nav-link {{ str_contains(Route::currentRouteName(), 'locations') ? 'active' : '' }}">
+                            <i class="nav-icon bi bi-geo-alt"></i>
+                            <p>
+                                Lokasi
+                            </p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('workers.index') }}"
+                            class="nav-link {{ str_contains(Route::currentRouteName(), 'workers') ? 'active' : '' }}">
+                            <i class="nav-icon bi bi-person-walking"></i>
+                            <p>
+                                Pekerja
+                            </p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('absens.index') }}"
+                            class="nav-link {{ str_contains(Route::currentRouteName(), 'absens') ? 'active' : '' }}">
+                            <i class="nav-icon bi bi-person-vcard"></i>
+                            <p>
+                                Absen Pekerja
+                            </p>
+                        </a>
+                    </li>
                 @endif
             </ul>
             <!--end::Sidebar Menu-->
