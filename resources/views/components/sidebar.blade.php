@@ -57,6 +57,60 @@
                             </p>
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a href="{{ route('stocks.index') }}"
+                            class="nav-link {{ str_contains(Route::currentRouteName(), 'stocks') ? 'active' : '' }}">
+                            <i class="nav-icon bi bi-currency-exchange"></i>
+                            <p>
+                                Hasil
+                            </p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('invest.index') }}"
+                            class="nav-link {{ str_contains(Route::currentRouteName(), 'invest') ? 'active' : '' }}">
+                            <i class="nav-icon bi bi-currency-bitcoin"></i>
+                            <p>
+                                Manajemen Investor
+                            </p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('periods.index') }}"
+                            class="nav-link {{ str_contains(Route::currentRouteName(), 'periods') ? 'active' : '' }}">
+                            <i class="nav-icon bi bi-stopwatch"></i>
+                            <p>
+                                Setting Periode
+                            </p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('transactions.index') }}"
+                            class="nav-link {{ str_contains(Route::currentRouteName(), 'transactions') ? 'active' : '' }}">
+                            <i class="nav-icon bi bi-shop"></i>
+                            <p>
+                                Transaksi
+                            </p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('report.absen') }}"
+                            class="nav-link {{ str_contains(Route::currentRouteName(), 'report') ? 'active' : '' }}">
+                            <i class="nav-icon bi bi-filetype-pdf"></i>
+                            <p>
+                                Rekap Absen
+                            </p>
+                        </a>
+                    </li>
+                    {{-- <li class="nav-item">
+                        <a href="{{ route('laporan-penghasilan.index') }}"
+                            class="nav-link {{ str_contains(Route::currentRouteName(), 'laporan-penghasilan') ? 'active' : '' }}">
+                            <i class="nav-icon bi bi-filetype-pdf"></i>
+                            <p>
+                                Rekap Absen
+                            </p>
+                        </a>
+                    </li> --}}
                 @endif
             </ul>
             <!--end::Sidebar Menu-->

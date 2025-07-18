@@ -1,0 +1,141 @@
+<div>
+    <form wire:submit.prevent="store" class="mb-3">
+        <div class="row">
+            <div class="col-md-2">
+                <label>Tanggal</label>
+                <input type="date" wire:model.defer="date" class="form-control">
+            </div>
+            <div class="col-md-2">
+                <label>Lokasi</label>
+                <select wire:model="location_id" wire:change="$refresh" class="form-control">
+                    <option value="">-- Lokasi --</option>
+                    @foreach ($locations as $loc)
+                        <option value="{{ $loc->id }}">{{ $loc->name }}</option>
+                    @endforeach
+                </select>
+                 @error('location_id') <small class="text-danger">{{ $message }}</small> @enderror
+            </div>
+            <div class="col-md-2">
+                <label>Periode</label>
+                <select wire:model.defer="period_id" class="form-control" wire:key="form-period-{{ $location_id }}">
+                    <option value="">-- Periode --</option>
+                    @forelse ($formPeriods as $p)
+                        <option value="{{ $p->id }}">{{ $p->date_start }} s/d {{ $p->date_end }}</option>
+                    @empty
+                        <option value="">Tidak ada periode tersedia</option>
+                    @endforelse
+                </select>
+                 @error('period_id') <small class="text-danger">{{ $message }}</small> @enderror
+
+            </div>
+            <div class="col-md-1">
+                <label>Qty</label>
+                <input type="number" wire:model.defer="qty" class="form-control" step="0.01">
+                 @error('qty') <small class="text-danger">{{ $message }}</small> @enderror
+            </div>
+            <div class="col-md-2">
+                <label>Harga</label>
+                <input type="number" wire:model.defer="price" class="form-control">
+                 @error('price') <small class="text-danger">{{ $message }}</small> @enderror
+            </div>
+            <div class="col-md-1">
+                <label>Tipe</label>
+                <select wire:model.defer="type" class="form-control">
+                    <option value="">--</option>
+                    <option value="kredit">Kredit</option>
+                    <option value="debit">Debit</option>
+                </select>
+                 @error('type') <small class="text-danger">{{ $message }}</small> @enderror
+            </div>
+            <div class="col-md-2">
+                <label>Catatan</label>
+                <input type="text" wire:model.defer="note" class="form-control" placeholder="Catatan (opsional)">
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="d-flex align-items-end">
+                <button class="btn btn-primary w-100">Tambah</button>
+            </div>
+        </div>
+    </form>
+
+    <div class="row mb-2">
+        <div class="col-md-4">
+            <select wire:model="filterLocation" wire:change="$refresh" class="form-control">
+                <option value="">-- Filter Lokasi --</option>
+                @foreach ($locations as $loc)
+                    <option value="{{ $loc->id }}">{{ $loc->name }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="col-md-4">
+            <select wire:model="filterPeriod" class="form-control" @if (!$filterLocation) disabled @endif>
+                <option value="">-- Filter Periode --</option>
+                @forelse ($filterPeriods as $p)
+                    <option value="{{ $p->id }}">{{ $p->date_start }} - {{ $p->date_end }}</option>
+                @empty
+                    <option value="">Tidak ada periode</option>
+                @endforelse
+            </select>
+
+        </div>
+        <div class="col-md-4">
+            <button class="btn btn-secondary" wire:click="$refresh">Terapkan Filter</button>
+        </div>
+    </div>
+
+
+    <div class="mb-2">
+        <strong>Total Kredit:</strong> Rp {{ number_format($totalKredit, 2, ',', '.') }} |
+        <strong>Total Debit:</strong> Rp {{ number_format($totalDebit, 2, ',', '.') }} |
+        <strong>Sisa:</strong> Rp {{ number_format($net, 2, ',', '.') }} |
+        <strong>Pekerja (30%):</strong> Rp {{ number_format($toWorkers, 2, ',', '.') }} |
+        <strong>Investor (70%):</strong> Rp {{ number_format($toInvestors, 2, ',', '.') }}
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-sm table-bordered" style="font-size: 0.875rem">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Tanggal</th>
+                    <th>Lokasi</th>
+                    <th>Periode</th>
+                    <th>Uraian</th>
+                    <th>Qty</th>
+                    <th>Harga</th>
+                    <th>Tipe</th>
+                    <th>Jumlah</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($transactions as $trx)
+                    <tr>
+                        <td>{{ $loop->iteration + ($transactions->currentPage() - 1) * $transactions->perPage() }}</td>
+                        <td>{{ $trx->date }}</td>
+                        <td>{{ $trx->location->name ?? '-' }}</td>
+                        <td>{{ $trx->period->date_start ?? '-' }} s/d {{ $trx->period->date_end ?? '-' }}</td>
+                        <td>{{ $trx->note ?? '-' }}</td>
+                        <td>{{ $trx->qty }}</td>
+                        <td>{{ number_format($trx->price) }}</td>
+                        <td>{{ ucfirst($trx->type) }}</td>
+                        <td>Rp {{ number_format($trx->amount, 2, ',', '.') }}</td>
+                        <td>
+                            <button wire:click="destroy({{ $trx->id }})" class="btn btn-sm btn-danger"
+                                onclick="return confirm('Hapus transaksi ini?')">Hapus</button>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="9" class="text-center">Tidak ada data transaksi</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+
+    <div class="d-flex justify-content-end">
+        {{ $transactions->links() }}
+    </div>
+</div>

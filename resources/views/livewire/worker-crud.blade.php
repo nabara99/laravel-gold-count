@@ -81,7 +81,7 @@
                         <td>{{ $worker->phone_number ?? '-' }}</td>
                         <td>
                             <button wire:click="edit({{ $worker->id }})" class="btn btn-sm btn-info" title="edit"><i class="bi bi-pencil-square"></i></button>
-                            <button wire:click="destroy({{ $worker->id }})" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus?')" title="hapus"><i class="bi bi-trash3-fill"></i></button>
+                            <button onclick="confirmDelete({{ $worker->id }})" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus?')" title="hapus"><i class="bi bi-trash3-fill"></i></button>
                         </td>
                     </tr>
                 @empty
@@ -97,3 +97,11 @@
         {{ $workers->links() }}
     </div>
 </div>
+
+<script>
+    function confirmDelete(id) {
+        if (confirm('Yakin menghapus data ini?')) {
+            @this.call('destroy', id)
+        }
+    }
+</script>

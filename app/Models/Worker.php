@@ -21,4 +21,9 @@ class Worker extends Model
     {
         return $this->belongsTo(Location::class);
     }
+
+    public function absens()
+    {
+        return $this->hasMany(Absen::class);
+    }
 }

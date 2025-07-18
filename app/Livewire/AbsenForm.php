@@ -69,21 +69,14 @@ class AbsenForm extends Component
         }
     }
 
-    public function updated($property)
+    public function updatedAbsensi($value, $key)
     {
-        if (str_starts_with($property, 'absensi.')) {
-            // Cek jika semua pekerja dicentang
-            $this->selectAll = collect($this->workers)->every(function ($worker) {
-                return isset($this->absensi[$worker->id]) && $this->absensi[$worker->id];
-            });
-        }
+        $workerIds = collect($this->workers)->pluck('id');
 
-        if ($property === 'selectAll') {
-            foreach ($this->workers as $worker) {
-                $this->absensi[$worker->id] = $this->selectAll;
-            }
-        }
+        // Cek apakah semua pekerja dicentang
+        $this->selectAll = $workerIds->every(fn ($id) => !empty($this->absensi[$id]));
     }
+
 
     public function save()
     {

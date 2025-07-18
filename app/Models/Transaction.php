@@ -14,6 +14,7 @@ class Transaction extends Model
         'date',
         'location_id',
         'period_id',
+        'note',
         'qty',
         'price',
         'type',
@@ -28,5 +29,12 @@ class Transaction extends Model
     public function period()
     {
         return $this->belongsTo(Period::class);
+    }
+
+    protected static function booted()
+    {
+        static::creating(function ($transaction) {
+            $transaction->amount = $transaction->qty * $transaction->price;
+        });
     }
 }

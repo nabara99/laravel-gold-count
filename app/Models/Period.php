@@ -21,4 +21,9 @@ class Period extends Model
     {
         return $this->belongsTo(Location::class);
     }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
 }

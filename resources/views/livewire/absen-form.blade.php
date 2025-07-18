@@ -28,8 +28,8 @@
                         <th>No</th>
                         <th>Nama Pekerja</th>
                         <th>
+                            <input type="checkbox" wire:model.lazy="selectAll">
                             Hadir
-                            <input type="checkbox" wire:model.lazy="selectAll" class="ms-2">
                         </th>
                     </tr>
                 </thead>
