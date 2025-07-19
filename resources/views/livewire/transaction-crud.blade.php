@@ -42,8 +42,8 @@
                 <label>Tipe</label>
                 <select wire:model.defer="type" class="form-control">
                     <option value="">--</option>
-                    <option value="kredit">Kredit</option>
-                    <option value="debit">Debit</option>
+                    <option value="kredit">Masuk</option>
+                    <option value="debit">Keluar</option>
                 </select>
                  @error('type') <small class="text-danger">{{ $message }}</small> @enderror
             </div>
@@ -86,8 +86,8 @@
 
 
     <div class="mb-2">
-        <strong>Total Kredit:</strong> Rp {{ number_format($totalKredit, 2, ',', '.') }} |
-        <strong>Total Debit:</strong> Rp {{ number_format($totalDebit, 2, ',', '.') }} |
+        <strong>Total Masuk:</strong> Rp {{ number_format($totalKredit, 2, ',', '.') }} |
+        <strong>Total Keluar:</strong> Rp {{ number_format($totalDebit, 2, ',', '.') }} |
         <strong>Sisa:</strong> Rp {{ number_format($net, 2, ',', '.') }} |
         <strong>Pekerja (30%):</strong> Rp {{ number_format($toWorkers, 2, ',', '.') }} |
         <strong>Investor (70%):</strong> Rp {{ number_format($toInvestors, 2, ',', '.') }}
@@ -119,7 +119,7 @@
                         <td>{{ $trx->note ?? '-' }}</td>
                         <td>{{ $trx->qty }}</td>
                         <td>{{ number_format($trx->price) }}</td>
-                        <td>{{ ucfirst($trx->type) }}</td>
+                        <td>{{ $trx->type === 'kredit' ? 'masuk' : ($trx->type === 'debit' ? 'keluar' : ucfirst($trx->type)) }}</td>
                         <td>Rp {{ number_format($trx->amount, 2, ',', '.') }}</td>
                         <td>
                             <button wire:click="destroy({{ $trx->id }})" class="btn btn-sm btn-danger"

@@ -3,6 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Location;
+use App\Models\Period;
+use App\Models\Transaction;
+use App\Models\Worker;
+use App\Models\Absen;
 
 class SalaryReportController extends Controller
 {

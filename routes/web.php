@@ -54,9 +54,10 @@ Route::get('/laporan-absensi/periods/{locationId}', [ReportController::class, 'g
 Route::get('/laporan-absensi/data', [ReportController::class, 'getReport']);
 
 Route::prefix('laporan-penghasilan')->group(function () {
-    Route::get('/', [SalaryReportController::class, 'index']);
-    Route::get('/periods/{locationId}', [SalaryReportController::class, 'getPeriods']);
-    Route::get('/data', [SalaryReportController::class, 'getIncomeData']);
+    Route::get('/', [SalaryReportController::class, 'index'])->name('laporan.index');
+    Route::get('/periods/{locationId}', [SalaryReportController::class, 'getPeriods'])->name('laporan.periods');
+    Route::get('/data', [SalaryReportController::class, 'getIncomeData'])->name('laporan.data');
 });
+
 
 

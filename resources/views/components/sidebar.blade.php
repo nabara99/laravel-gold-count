@@ -102,15 +102,15 @@
                             </p>
                         </a>
                     </li>
-                    {{-- <li class="nav-item">
-                        <a href="{{ route('laporan-penghasilan.index') }}"
-                            class="nav-link {{ str_contains(Route::currentRouteName(), 'laporan-penghasilan') ? 'active' : '' }}">
-                            <i class="nav-icon bi bi-filetype-pdf"></i>
+                    <li class="nav-item">
+                        <a href="{{ route('laporan.index') }}"
+                            class="nav-link {{ str_contains(Route::currentRouteName(), 'laporan') ? 'active' : '' }}">
+                            <i class="nav-icon bi bi-file-earmark-pdf-fill"></i>
                             <p>
-                                Rekap Absen
+                                Penghasilan Pekerja
                             </p>
                         </a>
-                    </li> --}}
+                    </li>
                 @endif
             </ul>
             <!--end::Sidebar Menu-->
