@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Location;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+use App\Models\Stock;
 
 class DashboardController extends Controller
 {
@@ -28,6 +31,36 @@ class DashboardController extends Controller
             ];
         });
 
-        return view('dashboard', compact('dashboardData'));
+        $bulanIni = Carbon::now()->format('Y-m');
+
+        $stocks = Stock::selectRaw('DATE(date) as tanggal, location_id, SUM(weight) as total')
+            ->where('date', 'like', "$bulanIni%")
+            ->groupBy('tanggal', 'location_id')
+            ->orderBy('tanggal')
+            ->get();
+
+        $locations = Location::all()->keyBy('id');
+
+        $tanggalList = $stocks->pluck('tanggal')->unique()->values();
+
+        $locationList = $stocks->pluck('location_id')->unique()->values();
+
+        $dataGrafik = [];
+
+        foreach ($locationList as $locationId) {
+            $data = [];
+
+            foreach ($tanggalList as $tanggal) {
+                $record = $stocks->firstWhere(fn($row) => $row->location_id == $locationId && $row->tanggal == $tanggal);
+                $data[] = $record ? floatval($record->total) : 0;
+            }
+
+            $dataGrafik[] = [
+                'label' => $locations[$locationId]->name,
+                'data' => $data,
+            ];
+        }
+
+        return view('dashboard', compact('dashboardData', 'tanggalList', 'dataGrafik'));
     }
 }
