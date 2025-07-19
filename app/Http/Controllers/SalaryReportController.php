@@ -30,7 +30,6 @@ class SalaryReportController extends Controller
         $period = Period::find($periodId);
         if (!$period) return [];
 
-        // Hitung total kredit dan debit
         $totalKredit = Transaction::where('location_id', $locationId)
             ->where('period_id', $periodId)
             ->where('type', 'kredit')
@@ -44,7 +43,6 @@ class SalaryReportController extends Controller
         $profit = $totalKredit - $totalDebit;
         $totalForWorkers = $profit * 0.3;
 
-        // Ambil absensi semua pekerja dan jumlah hadir
         $workers = Worker::where('location_id', $locationId)->get();
         $absens = Absen::where('location_id', $locationId)
             ->whereBetween('date', [$period->date_start, $period->date_end])
@@ -54,7 +52,6 @@ class SalaryReportController extends Controller
 
         $totalHadir = $absens->flatten()->count();
 
-        // Hitung penghasilan per pekerja
         $result = $workers->map(function ($worker) use ($absens, $totalForWorkers, $totalHadir) {
             $jumlahHadir = isset($absens[$worker->id]) ? $absens[$worker->id]->count() : 0;
             $income = $totalHadir > 0 ? ($jumlahHadir / $totalHadir) * $totalForWorkers : 0;
