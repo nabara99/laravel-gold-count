@@ -13,7 +13,9 @@
                         <option value="{{ $loc->id }}">{{ $loc->name }}</option>
                     @endforeach
                 </select>
-                 @error('location_id') <small class="text-danger">{{ $message }}</small> @enderror
+                @error('location_id')
+                    <small class="text-danger">{{ $message }}</small>
+                @enderror
             </div>
             <div class="col-md-2">
                 <label>Periode</label>
@@ -25,18 +27,24 @@
                         <option value="">Tidak ada periode tersedia</option>
                     @endforelse
                 </select>
-                 @error('period_id') <small class="text-danger">{{ $message }}</small> @enderror
+                @error('period_id')
+                    <small class="text-danger">{{ $message }}</small>
+                @enderror
 
             </div>
             <div class="col-md-1">
                 <label>Qty</label>
                 <input type="number" wire:model.defer="qty" class="form-control" step="0.01">
-                 @error('qty') <small class="text-danger">{{ $message }}</small> @enderror
+                @error('qty')
+                    <small class="text-danger">{{ $message }}</small>
+                @enderror
             </div>
             <div class="col-md-2">
                 <label>Harga</label>
                 <input type="number" wire:model.defer="price" class="form-control">
-                 @error('price') <small class="text-danger">{{ $message }}</small> @enderror
+                @error('price')
+                    <small class="text-danger">{{ $message }}</small>
+                @enderror
             </div>
             <div class="col-md-1">
                 <label>Tipe</label>
@@ -45,7 +53,9 @@
                     <option value="kredit">Masuk</option>
                     <option value="debit">Keluar</option>
                 </select>
-                 @error('type') <small class="text-danger">{{ $message }}</small> @enderror
+                @error('type')
+                    <small class="text-danger">{{ $message }}</small>
+                @enderror
             </div>
             <div class="col-md-2">
                 <label>Catatan</label>
@@ -119,11 +129,13 @@
                         <td>{{ $trx->note ?? '-' }}</td>
                         <td>{{ $trx->qty }}</td>
                         <td>{{ number_format($trx->price) }}</td>
-                        <td>{{ $trx->type === 'kredit' ? 'masuk' : ($trx->type === 'debit' ? 'keluar' : ucfirst($trx->type)) }}</td>
+                        <td>{{ $trx->type === 'kredit' ? 'masuk' : ($trx->type === 'debit' ? 'keluar' : ucfirst($trx->type)) }}
+                        </td>
                         <td>Rp {{ number_format($trx->amount, 2, ',', '.') }}</td>
                         <td>
-                            <button wire:click="destroy({{ $trx->id }})" class="btn btn-sm btn-danger"
-                                onclick="return confirm('Hapus transaksi ini?')">Hapus</button>
+                            <button onclick="confirmDelete({{ $trx->id }})" class="btn btn-sm btn-danger"
+                                onclick="return confirm('Yakin ingin menghapus?')" title="hapus"><i
+                                    class="bi bi-trash3-fill"></i></button>
                         </td>
                     </tr>
                 @empty
@@ -139,3 +151,11 @@
         {{ $transactions->links() }}
     </div>
 </div>
+
+<script>
+    function confirmDelete(id) {
+        if (confirm('Yakin menghapus data ini?')) {
+            @this.call('destroy', id)
+        }
+    }
+</script>

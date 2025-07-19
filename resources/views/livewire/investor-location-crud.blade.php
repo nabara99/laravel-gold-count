@@ -78,7 +78,7 @@
                         <td>{{ $inv->created_at->format('d-m-Y') }}</td>
                         <td>
                             <button wire:click="edit({{ $inv->id }})" class="btn btn-sm btn-info" title="edit"><i class="bi bi-pencil-square"></i></button>
-                            <button onclick="confirmDelete({{ $inv->id }})" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus?')" title="hapus"><i class="bi bi-trash3-fill"></i></button>
+                            {{-- <button onclick="confirmDelete({{ $inv->id }})" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus?')" title="hapus"><i class="bi bi-trash3-fill"></i></button> --}}
                         </td>
                     </tr>
                 @empty
@@ -95,10 +95,10 @@
     </div>
 </div>
 
-<script>
+{{-- <script>
     function confirmDelete(id) {
         if (confirm('Yakin menghapus data ini?')) {
             @this.call('destroy', id)
         }
     }
-</script>
+</script> --}}

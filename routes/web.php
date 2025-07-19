@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SalaryReportController;
+use App\Http\Controllers\DashboardController;
 
 Route::get('/', function () {
     if(auth()->check()) {
@@ -13,9 +14,7 @@ Route::get('/', function () {
 })->name('/');
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/home', function () {
-        return view('dashboard');
-    })->name('home');
+    Route::get('/home', [DashboardController::class, 'index'])->name('home');
 });
 
 Route::resource('user', UserController::class)->middleware(['auth', 'isAdmin']);

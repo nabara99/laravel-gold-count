@@ -65,9 +65,9 @@
                         <td>Rp {{ number_format($period->total_money, 2, ',', '.') }}</td>
                         <td>{{ $period->created_at->format('d/m/Y') }}</td>
                         <td>
-                            <button wire:click="edit({{ $period->id }})" class="btn btn-sm btn-info">Edit</button>
-                            <button wire:click="destroy({{ $period->id }})" class="btn btn-sm btn-danger"
-                                onclick="return confirm('Yakin ingin menghapus?')">Hapus</button>
+                            <button wire:click="edit({{ $period->id }})" class="btn btn-sm btn-info" title="edit"><i class="bi bi-pencil-square"></i></button>
+                            {{-- <button wire:click="destroy({{ $period->id }})" class="btn btn-sm btn-danger"
+                                onclick="return confirm('Yakin ingin menghapus?')">Hapus</button> --}}
                         </td>
                     </tr>
                 @empty
