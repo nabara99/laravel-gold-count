@@ -18,6 +18,7 @@ class Transaction extends Model
         'qty',
         'price',
         'type',
+        'increase',
         'amount',
     ];
 

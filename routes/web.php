@@ -48,6 +48,10 @@ Route::get('/transactions', function () {
     return view('pages.transactions.index');
 })->name('transactions.index')->middleware('auth', 'isAdmin');
 
+Route::get('/cashbon', function () {
+    return view('pages.cashbon.index');
+})->name('cashbon.index')->middleware('auth', 'isAdmin');
+
 Route::get('/laporan-absensi', [ReportController::class, 'index'])->name('report.absen');
 Route::get('/laporan-absensi/periods/{locationId}', [ReportController::class, 'getPeriods']);
 Route::get('/laporan-absensi/data', [ReportController::class, 'getReport']);

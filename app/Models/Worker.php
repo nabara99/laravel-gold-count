@@ -26,4 +26,9 @@ class Worker extends Model
     {
         return $this->hasMany(Absen::class);
     }
+
+    public function cashbons()
+    {
+        return $this->hasMany(Cashbon::class);
+    }
 }

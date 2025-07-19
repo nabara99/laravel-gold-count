@@ -16,6 +16,7 @@ class TransactionCrud extends Component
     public $transactionId;
     public $isEdit = false;
     public $locations = [];
+    public $increase = false;
 
     public $filterLocation = '';
     public $filterPeriod = '';
@@ -29,6 +30,7 @@ class TransactionCrud extends Component
         'qty' => 'required|numeric|min:0',
         'price' => 'required|numeric|min:0',
         'type' => 'required|in:kredit,debit',
+        'increase' => 'boolean',
         'note' => 'nullable|string|max:255',
     ];
 
@@ -72,6 +74,7 @@ class TransactionCrud extends Component
             'qty' => $this->qty,
             'price' => $this->price,
             'type' => $this->type,
+            'increase' => $this->increase,
             'amount' => $this->qty * $this->price,
             'note' => $this->note,
         ]);
@@ -91,6 +94,7 @@ class TransactionCrud extends Component
         $this->qty = $trx->qty;
         $this->price = $trx->price;
         $this->type = $trx->type;
+        $this->increase = $trx->increase;
         $this->note = $trx->note;
     }
 
@@ -105,6 +109,7 @@ class TransactionCrud extends Component
             'qty' => $this->qty,
             'price' => $this->price,
             'type' => $this->type,
+            'increase' => $this->increase,
             'amount' => $this->qty * $this->price,
             'note' => $this->note,
         ]);
@@ -121,7 +126,7 @@ class TransactionCrud extends Component
 
     public function resetForm()
     {
-        $this->reset(['date', 'location_id', 'period_id', 'qty', 'price', 'type', 'transactionId', 'isEdit']);
+        $this->reset(['date', 'location_id', 'period_id', 'qty', 'price', 'type', 'increase', 'transactionId', 'isEdit']);
     }
 
     public function render()
@@ -134,18 +139,31 @@ class TransactionCrud extends Component
         $transactions = $query->paginate(10);
 
         $totalKredit = $query->clone()->where('type', 'kredit')->sum('amount');
-        $totalDebit = $query->clone()->where('type', 'debit')->sum('amount');
+        $totalDebit = $query->clone()->where('type', 'debit')->where('increase', '1')->sum('amount');
         $net = $totalKredit - $totalDebit;
+
+        $percentWorker = 30;
+        $percentInvestor = 70;
+
+        if ($this->filterLocation) {
+            $location = \App\Models\Location::find($this->filterLocation);
+            if ($location) {
+                $percentWorker = $location->percent_worker;
+                $percentInvestor = $location->percent_investor;
+            }
+        }
 
         return view('livewire.transaction-crud', [
             'transactions' => $transactions,
             'totalKredit' => $totalKredit,
             'totalDebit' => $totalDebit,
             'net' => $net,
-            'toWorkers' => $net * 0.3,
-            'toInvestors' => $net * 0.7,
+            'toWorkers' => $net * ($percentWorker / 100),
+            'toInvestors' => $net * ($percentInvestor / 100),
             'formPeriods' => $this->formPeriods,
             'filterPeriods' => $this->filterPeriods,
+            'percentWorker' => $percentWorker,
+            'percentInvestor' => $percentInvestor,
         ]);
     }
 

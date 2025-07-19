@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Transactions | ')
+@section('title', 'Stock | ')
 
 @section('main')
     <main class="app-main">
@@ -10,10 +10,10 @@
                     <div class="col-md-12">
                         <div class="card">
                             <div class="card-header">
-                                <h3 class="card-title">Transaksi</h3>
+                                <h3 class="card-title">Hasil</h3>
                             </div>
                             <div class="card-body p-2">
-                                @livewire('transaction-crud')
+                                @livewire('cashbon-crud')
                             </div>
                         </div>
                     </div>

@@ -9,10 +9,14 @@ class LocationCrud extends Component
 {
     public $locations, $name, $address, $locationId;
     public $isEdit = false;
+    public $percent_investor = 0, $percent_worker = 0;
+
 
     protected $rules = [
         'name' => 'required|unique:locations,name',
-        'address' => 'nullable|string'
+        'address' => 'nullable|string',
+        'percent_investor' => 'required|integer|min:0|max:100',
+        'percent_worker' => 'required|integer|min:0|max:100',
     ];
 
     public function render()
@@ -25,6 +29,8 @@ class LocationCrud extends Component
     {
         $this->name = '';
         $this->address = '';
+        $this->percent_investor = 0;
+        $this->percent_worker = 0;
         $this->locationId = null;
         $this->isEdit = false;
         $this->resetValidation();
@@ -32,11 +38,18 @@ class LocationCrud extends Component
 
     public function store()
     {
+        if (($this->percent_investor + $this->percent_worker) !== 100) {
+            $this->addError('percent_worker', 'Total pembagian harus 100%.');
+            return;
+        }
+
         $this->validate();
 
         Location::create([
             'name' => $this->name,
-            'address' => $this->address
+            'address' => $this->address,
+            'percent_investor' => $this->percent_investor,
+            'percent_worker' => $this->percent_worker
         ]);
 
         $this->dispatch('toast:success', message: 'Data lokasi berhasil disimpan.');
@@ -48,20 +61,31 @@ class LocationCrud extends Component
         $lokasi = Location::findOrFail($id);
         $this->name = $lokasi->name;
         $this->address = $lokasi->address;
+        $this->percent_investor = $lokasi->percent_investor;
+        $this->percent_worker = $lokasi->percent_worker;
         $this->locationId = $lokasi->id;
         $this->isEdit = true;
     }
 
     public function update()
     {
+        if (($this->percent_investor + $this->percent_worker) !== 100) {
+            $this->addError('percent_worker', 'Total pembagian harus 100%.');
+            return;
+        }
+
         $this->validate([
             'name' => 'required|unique:locations,name,' . $this->locationId,
-            'address' => 'nullable|string'
+            'address' => 'nullable|string',
+            'percent_investor' => 'required|integer|min:0|max:100',
+            'percent_worker' => 'required|integer|min:0|max:100',
         ]);
 
         Location::find($this->locationId)->update([
             'name' => $this->name,
-            'address' => $this->address
+            'address' => $this->address,
+            'percent_investor' => $this->percent_investor,
+            'percent_worker' => $this->percent_worker
         ]);
 
         $this->dispatch('toast:success', message: 'Data lokasi berhasil diperbaharui.');

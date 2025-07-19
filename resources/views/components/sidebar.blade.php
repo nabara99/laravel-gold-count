@@ -58,6 +58,15 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a href="{{ route('cashbon.index') }}"
+                            class="nav-link {{ str_contains(Route::currentRouteName(), 'cashbon') ? 'active' : '' }}">
+                            <i class="nav-icon bi bi-wallet2"></i>
+                            <p>
+                                Kasbon
+                            </p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a href="{{ route('stocks.index') }}"
                             class="nav-link {{ str_contains(Route::currentRouteName(), 'stocks') ? 'active' : '' }}">
                             <i class="nav-icon bi bi-currency-exchange"></i>

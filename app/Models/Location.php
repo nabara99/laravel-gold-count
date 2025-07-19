@@ -13,6 +13,8 @@ class Location extends Model
     protected $fillable = [
         'name',
         'address',
+        'percent_investor',
+        'percent_worker',
     ];
 
     public function absens()
@@ -29,4 +31,11 @@ class Location extends Model
     {
         return $this->hasMany(Transaction::class);
     }
+
+    public function workers()
+    {
+        return $this->hasMany(Worker::class);
+    }
 }
+
+
