@@ -18,7 +18,7 @@ class DashboardController extends Controller
             $total_qty_kredit = $location->transactions->where('type', 'kredit')->sum('qty');
             $saldo_gram = $total_gram_didapat - $total_qty_kredit;
 
-            $rekap_pengeluaran = $location->transactions->where('type', 'debit')->where('increase', '1')->sum('amount');
+            $rekap_pengeluaran = $location->transactions->where('type', 'debit')->sum('amount');
             $rekap_pemasukan = $location->transactions->where('type', 'kredit')->sum('amount');
             $saldo_uang = $rekap_pemasukan - $rekap_pengeluaran;
 
