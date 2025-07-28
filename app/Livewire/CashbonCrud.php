@@ -89,6 +89,19 @@ class CashbonCrud extends Component
         }
     }
 
+    public function markAsUnpaid($id)
+    {
+        $cashbon = Cashbon::findOrFail($id);
+
+        if ($cashbon->status === 'paid') {
+            $cashbon->status = 'unpaid';
+            $cashbon->save();
+
+            session()->flash('success', 'Status berhasil diubah menjadi Unpaid.');
+        }
+    }
+
+
     public function resetInput()
     {
         $this->reset(['cashbonId', 'worker_id', 'location_id', 'date', 'amount', 'description', 'status', 'isEdit']);

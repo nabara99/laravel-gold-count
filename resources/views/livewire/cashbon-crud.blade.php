@@ -95,11 +95,16 @@
                                 title="hapus" onclick="confirm('Hapus data?') || event.stopImmediatePropagation()"><i
                                     class="bi bi-trash3-fill"></i></button>
                             @if ($cb->status == 'unpaid')
-                                <button wire:click="markAsPaid({{ $cb->id }})" class="btn btn-sm btn-outline-success" title="Tandai Lunas">
+                                <button wire:click="markAsPaid({{ $cb->id }})"
+                                    class="btn btn-sm btn-outline-success" title="Tandai Lunas">
                                     <i class="bi bi-cash-coin"></i>
                                 </button>
+                            @elseif ($cb->status == 'paid')
+                                <button wire:click="markAsUnpaid({{ $cb->id }})"
+                                    class="btn btn-sm btn-outline-warning" title="Batalkan Lunas">
+                                    <i class="bi bi-arrow-counterclockwise"></i>
+                                </button>
                             @endif
-
                         </td>
                     </tr>
                 @empty
