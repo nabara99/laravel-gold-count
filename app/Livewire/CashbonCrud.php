@@ -18,6 +18,8 @@ class CashbonCrud extends Component
     public $filterLocation = '';
     public $totalAmount = 0;
 
+    protected $paginationTheme = 'bootstrap';
+
     protected $rules = [
         'worker_id' => 'required',
         'location_id' => 'required',

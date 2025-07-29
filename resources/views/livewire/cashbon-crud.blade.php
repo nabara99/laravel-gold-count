@@ -1,5 +1,5 @@
 <div>
-    <h3 class="h5 fw-bold mb-4">{{ $isEdit ? 'Edit Cashbon' : 'Tambah Cashbon' }}</h3>
+    <h3 class="h5 fw-bold mb-2">{{ $isEdit ? 'Edit Cashbon' : 'Tambah Cashbon' }}</h3>
     <form wire:submit.prevent="{{ $isEdit ? 'update' : 'store' }}">
         <div class="row mb-2">
             <div class="col-md-3">
@@ -55,10 +55,8 @@
             <button type="button" wire:click="resetForm" class="btn btn-secondary">Batal</button>
         @endif
     </form>
-
-    <hr class="my-4">
-
-    <div class="row mb-3">
+    <hr class="my-2">
+    <div class="row mb-2">
         <div class="col-md-4">
             <label>Filter Lokasi</label>
             <select wire:model="filterLocation" class="form-control">
@@ -144,5 +142,7 @@
         </table>
     </div>
 
-    {{ $cashbons->links() }}
+    <div class="d-flex justify-content-end">
+        {{ $cashbons->links() }}
+    </div>
 </div>
