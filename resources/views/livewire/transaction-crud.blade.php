@@ -105,7 +105,6 @@
         </div>
     </div>
 
-
     <div class="mb-2">
         <strong>Total Masuk:</strong> Rp {{ number_format($totalKredit, 2, ',', '.') }} |
         <strong>Total Keluar:</strong> Rp {{ number_format($totalDebit, 2, ',', '.') }} |
@@ -114,6 +113,28 @@
         <strong>Investor ({{ $percentInvestor }}%):</strong> Rp {{ number_format($toInvestors, 2, ',', '.') }}
     </div>
 
+    <div class="row mb-2">
+        <div class="col-md-4">
+            <input type="text" class="form-control" wire:model.debounce.500ms="searchNote" placeholder="Cari catatan...">
+        </div>
+        <div class="col-md-3">
+            <select class="form-control" wire:model="searchType">
+                <option value="">-- Semua Tipe --</option>
+                <option value="kredit">Masuk</option>
+                <option value="debit">Keluar</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select class="form-control" wire:model="searchIncrease">
+                <option value="">-- Semua --</option>
+                <option value="1">Ya (Mengurangi Saldo)</option>
+                <option value="0">Tidak</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button wire:click="$refresh" class="btn btn-secondary">Terapkan</button>
+        </div>
+    </div>
 
     <div class="table-responsive">
         <table class="table table-sm table-bordered" style="font-size: 0.875rem">

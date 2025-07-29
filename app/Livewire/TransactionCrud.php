@@ -18,6 +18,10 @@ class TransactionCrud extends Component
     public $locations = [];
     public $increase = false;
 
+    public $searchNote = '';
+    public $searchType = '';
+    public $searchIncrease = '';
+
     public $filterLocation = '';
     public $filterPeriod = '';
 
@@ -134,6 +138,9 @@ class TransactionCrud extends Component
         $query = Transaction::with(['location', 'period'])
             ->when($this->filterLocation, fn($q) => $q->where('location_id', $this->filterLocation))
             ->when($this->filterPeriod, fn($q) => $q->where('period_id', $this->filterPeriod))
+            ->when($this->searchNote, fn($q) => $q->where('note', 'like', '%' . $this->searchNote . '%'))
+            ->when($this->searchType, fn($q) => $q->where('type', $this->searchType))
+            ->when($this->searchIncrease !== '', fn($q) => $q->where('increase', $this->searchIncrease))
             ->orderByDesc('date');
 
         $transactions = $query->paginate(10);
