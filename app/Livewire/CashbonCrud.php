@@ -14,6 +14,9 @@ class CashbonCrud extends Component
 
     public $cashbonId, $worker_id, $location_id, $date, $amount, $description, $status = 'unpaid';
     public $isEdit = false;
+    public $filterWorker = '';
+    public $filterLocation = '';
+    public $totalAmount = 0;
 
     protected $rules = [
         'worker_id' => 'required',
@@ -24,14 +27,42 @@ class CashbonCrud extends Component
         'description' => 'nullable|string',
     ];
 
+    public function applyFilter()
+    {
+        $this->resetPage();
+    }
+
     public function render()
     {
+        $query = Cashbon::with(['worker', 'location']);
+
+        if ($this->filterWorker) {
+            $query->where('worker_id', $this->filterWorker);
+        }
+
+        if ($this->filterLocation) {
+            $query->where('location_id', $this->filterLocation);
+        }
+
+        $this->totalAmount = $query->sum('amount');
+
         return view('livewire.cashbon-crud', [
-            'cashbons' => Cashbon::with(['worker', 'location'])->latest()->paginate(10),
+            'cashbons' => $query->latest()->paginate(10),
             'workers' => Worker::orderBy('name')->get(),
             'locations' => Location::orderBy('name')->get(),
         ]);
     }
+
+    public function updatedFilterWorker()
+    {
+        $this->resetPage();
+    }
+
+    public function updatedFilterLocation()
+    {
+        $this->resetPage();
+    }
+
 
     public function store()
     {

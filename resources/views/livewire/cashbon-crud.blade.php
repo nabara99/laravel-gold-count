@@ -58,9 +58,37 @@
 
     <hr class="my-4">
 
-    <h3 class="h5 fw-bold mb-3">Daftar Cashbon</h3>
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <label>Filter Lokasi</label>
+            <select wire:model="filterLocation" class="form-control">
+                <option value="">-- Semua Lokasi --</option>
+                @foreach ($locations as $loc)
+                    <option value="{{ $loc->id }}">{{ $loc->name }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label>Filter Pekerja</label>
+            <select wire:model="filterWorker" class="form-control">
+                <option value="">-- Semua Pekerja --</option>
+                @foreach ($workers as $worker)
+                    <option value="{{ $worker->id }}">{{ $worker->name }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+            <button wire:click="applyFilter" class="btn btn-secondary">Terapkan Filter</button>
+        </div>
+    </div>
+
+
+    <h3 class="h5 fw-bold mb-2">Daftar Cashbon</h3>
 
     <div class="table-responsive">
+        <div class="col-md-3">
+            <strong>Total Kasbon:</strong> Rp {{ number_format($totalAmount, 0, ',', '.') }}
+        </div>
         <table class="table table-bordered align-middle">
             <thead class="table-light">
                 <tr>
