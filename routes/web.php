@@ -36,6 +36,10 @@ Route::get('/stocks', function () {
     return view('pages.stocks.index');
 })->name('stocks.index')->middleware('auth', 'isAdmin');
 
+Route::get('/stocks-invest', function () {
+    return view('pages.stocks-invest.index');
+})->name('stocks-invest.index')->middleware('auth', 'isInvestor');
+
 Route::get('/invest', function () {
     return view('pages.investor.index');
 })->name('invest.index')->middleware('auth', 'isAdmin');

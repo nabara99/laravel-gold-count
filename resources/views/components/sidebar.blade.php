@@ -20,6 +20,17 @@
                         </p>
                     </a>
                 </li>
+                @if (auth()->user()->role->role_name == 'investor')
+                <li class="nav-item">
+                        <a href="{{ route('stocks-invest.index') }}"
+                            class="nav-link {{ str_contains(Route::currentRouteName(), 'stocks-invest') ? 'active' : '' }}">
+                            <i class="nav-icon bi bi-currency-exchange"></i>
+                            <p>
+                                Hasil
+                            </p>
+                        </a>
+                    </li>
+                @endif
                 @if (auth()->user()->role->role_name == 'admin')
                     <li class="nav-item">
                         <a href="{{ route('user.index') }}"
