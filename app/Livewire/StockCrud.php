@@ -19,6 +19,8 @@ class StockCrud extends Component
     public $searchTerm = '';
     public $filterLocation = '';
     public $selectedLocation = '';
+    public $filterMonth = '';
+    public $selectedMonth = '';
 
     public $totalWeight = 0;
 
@@ -33,13 +35,14 @@ class StockCrud extends Component
         'notes' => 'nullable|string',
     ];
 
-    protected $updatesQueryString = ['search', 'filterLocation'];
+    protected $updatesQueryString = ['search', 'filterLocation', 'filterMonth'];
 
     public function mount()
     {
         $this->locations = Location::all();
         $this->date = now()->toDateString();
         $this->selectedLocation = $this->filterLocation;
+        $this->selectedMonth = $this->filterMonth;
         $this->updateTotalWeight();
     }
 
@@ -53,9 +56,39 @@ class StockCrud extends Component
         $this->resetPage();
     }
 
+    public function updatingFilterMonth()
+    {
+        $this->resetPage();
+    }
+
     public function applyLocationFilter()
     {
         $this->filterLocation = $this->selectedLocation;
+        $this->resetPage();
+        $this->updateTotalWeight();
+    }
+
+    public function applyMonthFilter()
+    {
+        $this->filterMonth = $this->selectedMonth;
+        $this->resetPage();
+        $this->updateTotalWeight();
+    }
+
+    public function applyFilters()
+    {
+        $this->filterLocation = $this->selectedLocation;
+        $this->filterMonth = $this->selectedMonth;
+        $this->resetPage();
+        $this->updateTotalWeight();
+    }
+
+    public function clearFilters()
+    {
+        $this->filterLocation = '';
+        $this->selectedLocation = '';
+        $this->filterMonth = '';
+        $this->selectedMonth = '';
         $this->resetPage();
         $this->updateTotalWeight();
     }
@@ -137,7 +170,29 @@ class StockCrud extends Component
             $query->where('location_id', $this->filterLocation);
         }
 
+        if ($this->filterMonth !== '') {
+            $query->whereYear('date', substr($this->filterMonth, 0, 4))
+                  ->whereMonth('date', substr($this->filterMonth, 5, 2));
+        }
+
         $this->totalWeight = $query->sum('weight');
+    }
+
+    public function getMonthOptions()
+    {
+        $months = [];
+        $currentYear = now()->year;
+        $startYear = $currentYear; // Show last 2 years + current year
+
+        for ($year = $startYear; $year <= $currentYear; $year++) {
+            for ($month = 1; $month <= 12; $month++) {
+                $monthValue = sprintf('%04d-%02d', $year, $month);
+                $monthLabel = \Carbon\Carbon::createFromDate($year, $month, 1)->format('F Y');
+                $months[$monthValue] = $monthLabel;
+            }
+        }
+
+        return array_reverse($months, true); // Show newest first
     }
 
     public function render()
@@ -149,11 +204,16 @@ class StockCrud extends Component
             ->when($this->filterLocation !== '', function ($q) {
                 $q->where('location_id', $this->filterLocation);
             })
+            ->when($this->filterMonth !== '', function ($q) {
+                $q->whereYear('date', substr($this->filterMonth, 0, 4))
+                  ->whereMonth('date', substr($this->filterMonth, 5, 2));
+            })
             ->orderByDesc('date');
 
         return view('livewire.stock-crud', [
             'stocks' => $query->paginate(10),
             'locations' => $this->locations,
+            'monthOptions' => $this->getMonthOptions(),
         ]);
     }
 }

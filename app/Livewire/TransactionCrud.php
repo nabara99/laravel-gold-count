@@ -24,6 +24,8 @@ class TransactionCrud extends Component
 
     public $filterLocation = '';
     public $filterPeriod = '';
+    public $filterMonth = '';
+    public $selectedMonth = '';
 
     protected $paginationTheme = 'bootstrap';
 
@@ -38,10 +40,13 @@ class TransactionCrud extends Component
         'note' => 'nullable|string|max:255',
     ];
 
+    protected $updatesQueryString = ['filterLocation', 'filterPeriod', 'filterMonth', 'searchNote', 'searchType', 'searchIncrease'];
+
     public function mount()
     {
         $this->date = now()->toDateString();
         $this->locations = Location::orderBy('name')->get();
+        $this->selectedMonth = $this->filterMonth;
     }
 
     public function getFormPeriodsProperty()
@@ -66,6 +71,40 @@ class TransactionCrud extends Component
         $this->filterPeriod = '';
     }
 
+    public function applyFilters()
+    {
+        $this->filterMonth = $this->selectedMonth;
+        $this->resetPage();
+    }
+
+    public function clearFilters()
+    {
+        $this->filterLocation = '';
+        $this->filterPeriod = '';
+        $this->filterMonth = '';
+        $this->selectedMonth = '';
+        $this->searchNote = '';
+        $this->searchType = '';
+        $this->searchIncrease = '';
+        $this->resetPage();
+    }
+
+    public function getMonthOptions()
+    {
+        $months = [];
+        $currentYear = now()->year;
+        $startYear = $currentYear; // Show last 2 years + current year
+
+        for ($year = $startYear; $year <= $currentYear; $year++) {
+            for ($month = 1; $month <= 12; $month++) {
+                $monthValue = sprintf('%04d-%02d', $year, $month);
+                $monthLabel = \Carbon\Carbon::createFromDate($year, $month, 1)->format('F Y');
+                $months[$monthValue] = $monthLabel;
+            }
+        }
+
+        return array_reverse($months, true); // Show newest first
+    }
 
     public function store()
     {
@@ -130,7 +169,8 @@ class TransactionCrud extends Component
 
     public function resetForm()
     {
-        $this->reset(['date', 'location_id', 'period_id', 'qty', 'price', 'type', 'increase', 'transactionId', 'isEdit']);
+        $this->reset(['date', 'location_id', 'period_id', 'qty', 'price', 'type', 'increase', 'transactionId', 'isEdit', 'note']);
+        $this->date = now()->toDateString();
     }
 
     public function render()
@@ -138,6 +178,10 @@ class TransactionCrud extends Component
         $query = Transaction::with(['location', 'period'])
             ->when($this->filterLocation, fn($q) => $q->where('location_id', $this->filterLocation))
             ->when($this->filterPeriod, fn($q) => $q->where('period_id', $this->filterPeriod))
+            ->when($this->filterMonth !== '', function ($q) {
+                $q->whereYear('date', substr($this->filterMonth, 0, 4))
+                  ->whereMonth('date', substr($this->filterMonth, 5, 2));
+            })
             ->when($this->searchNote, fn($q) => $q->where('note', 'like', '%' . $this->searchNote . '%'))
             ->when($this->searchType, fn($q) => $q->where('type', $this->searchType))
             ->when($this->searchIncrease !== '', fn($q) => $q->where('increase', $this->searchIncrease))
@@ -147,6 +191,7 @@ class TransactionCrud extends Component
 
         $totalKredit = $query->clone()->where('type', 'kredit')->sum('amount');
         $totalDebit = $query->clone()->where('type', 'debit')->where('increase', '1')->sum('amount');
+        $totalQtyKredit = $query->clone()->where('type', 'kredit')->sum('qty');
         $net = $totalKredit - $totalDebit;
 
         $percentWorker = 30;
@@ -164,14 +209,15 @@ class TransactionCrud extends Component
             'transactions' => $transactions,
             'totalKredit' => $totalKredit,
             'totalDebit' => $totalDebit,
+            'totalQtyKredit' => $totalQtyKredit,
             'net' => $net,
             'toWorkers' => $net * ($percentWorker / 100),
             'toInvestors' => $net * ($percentInvestor / 100),
             'formPeriods' => $this->formPeriods,
             'filterPeriods' => $this->filterPeriods,
+            'monthOptions' => $this->getMonthOptions(),
             'percentWorker' => $percentWorker,
             'percentInvestor' => $percentInvestor,
         ]);
     }
-
 }

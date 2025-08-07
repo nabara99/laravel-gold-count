@@ -80,40 +80,114 @@
         @endif
     </form>
 
-    <div class="row mb-2">
-        <div class="col-md-4">
-            <select wire:model="filterLocation" wire:change="$refresh" class="form-control">
-                <option value="">-- Filter Lokasi --</option>
-                @foreach ($locations as $loc)
-                    <option value="{{ $loc->id }}">{{ $loc->name }}</option>
-                @endforeach
-            </select>
+    <!-- Filter Section -->
+    <div class="card mb-3">
+        <div class="card-header">
+            <h6 class="mb-0">Filter Data</h6>
         </div>
-        <div class="col-md-4">
-            <select wire:model="filterPeriod" class="form-control" @if (!$filterLocation) disabled @endif>
-                <option value="">-- Filter Periode --</option>
-                @forelse ($filterPeriods as $p)
-                    <option value="{{ $p->id }}">{{ $p->date_start }} - {{ $p->date_end }}</option>
-                @empty
-                    <option value="">Tidak ada periode</option>
-                @endforelse
-            </select>
+        <div class="card-body">
+            <div class="row mb-2">
+                <div class="col-md-3">
+                    <label class="form-label">Filter Lokasi</label>
+                    <select wire:model="filterLocation" wire:change="$refresh" class="form-control">
+                        <option value="">-- Semua Lokasi --</option>
+                        @foreach ($locations as $loc)
+                            <option value="{{ $loc->id }}">{{ $loc->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Filter Periode</label>
+                    <select wire:model="filterPeriod" class="form-control" @if (!$filterLocation) disabled @endif>
+                        <option value="">-- Semua Periode --</option>
+                        @forelse ($filterPeriods as $p)
+                            <option value="{{ $p->id }}">{{ $p->date_start }} - {{ $p->date_end }}</option>
+                        @empty
+                            <option value="">Tidak ada periode</option>
+                        @endforelse
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Filter Bulan</label>
+                    <select wire:model.defer="selectedMonth" class="form-control">
+                        <option value="">-- Semua Bulan --</option>
+                        @foreach ($monthOptions as $value => $label)
+                            <option value="{{ $value }}">{{ $label }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">&nbsp;</label>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary" wire:click="applyFilters">
+                            <i class="bi bi-funnel"></i> Terapkan
+                        </button>
+                        <button class="btn btn-outline-secondary" wire:click="clearFilters">
+                            <i class="bi bi-x-circle"></i> Reset
+                        </button>
+                    </div>
+                </div>
+            </div>
 
-        </div>
-        <div class="col-md-4">
-            <button class="btn btn-secondary" wire:click="$refresh">Terapkan Filter</button>
+            <!-- Active Filter Indicators -->
+            @if($filterLocation || $filterPeriod || $filterMonth)
+                <div class="row">
+                    <div class="col-12">
+                        <small class="text-muted">
+                            Filter aktif:
+                            @if($filterLocation)
+                                <span class="badge bg-info me-1">Lokasi: {{ $locations->find($filterLocation)->name ?? 'Unknown' }}</span>
+                            @endif
+                            @if($filterPeriod)
+                                @php
+                                    $activePeriod = $filterPeriods->find($filterPeriod);
+                                @endphp
+                                <span class="badge bg-info me-1">Periode: {{ $activePeriod ? $activePeriod->date_start . ' - ' . $activePeriod->date_end : 'Unknown' }}</span>
+                            @endif
+                            @if($filterMonth)
+                                <span class="badge bg-info me-1">Bulan: {{ $monthOptions[$filterMonth] ?? $filterMonth }}</span>
+                            @endif
+                        </small>
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 
-    <div class="mb-2">
-        <strong>Total Masuk:</strong> Rp {{ number_format($totalKredit, 2, ',', '.') }} |
-        <strong>Total Keluar:</strong> Rp {{ number_format($totalDebit, 2, ',', '.') }} |
-        <strong>Sisa:</strong> Rp {{ number_format($net, 2, ',', '.') }} |
-        <strong>Pekerja ({{ $percentWorker }}%):</strong> Rp {{ number_format($toWorkers, 2, ',', '.') }} |
-        <strong>Investor ({{ $percentInvestor }}%):</strong> Rp {{ number_format($toInvestors, 2, ',', '.') }}
+    <!-- Summary Section -->
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="d-flex flex-wrap gap-3">
+                        <div class="text-success">
+                            <strong>Total Masuk:</strong> Rp {{ number_format($totalKredit, 2, ',', '.') }}
+                        </div>
+                        <div class="text-success">
+                            <strong>Total Qty Masuk:</strong> {{ number_format($totalQtyKredit, 2, ',', '.') }}
+                        </div>
+                        <div class="text-danger">
+                            <strong>Total Keluar:</strong> Rp {{ number_format($totalDebit, 2, ',', '.') }}
+                        </div>
+                        <div class="text-primary">
+                            <strong>Sisa:</strong> Rp {{ number_format($net, 2, ',', '.') }}
+                        </div>
+                    </div>
+                    <div class="d-flex flex-wrap gap-3 mt-2">
+                        <div class="text-info">
+                            <strong>Pekerja ({{ $percentWorker }}%):</strong> Rp {{ number_format($toWorkers, 2, ',', '.') }}
+                        </div>
+                        <div class="text-warning">
+                            <strong>Investor ({{ $percentInvestor }}%):</strong> Rp {{ number_format($toInvestors, 2, ',', '.') }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="row mb-2">
+    <!-- Search Section -->
+    <div class="row mb-3">
         <div class="col-md-4">
             <input type="text" class="form-control" wire:model.debounce.500ms="searchNote" placeholder="Cari catatan...">
         </div>
@@ -132,13 +206,13 @@
             </select>
         </div>
         <div class="col-md-2">
-            <button wire:click="$refresh" class="btn btn-secondary">Terapkan</button>
+            <button wire:click="$refresh" class="btn btn-secondary">Cari</button>
         </div>
     </div>
 
     <div class="table-responsive">
         <table class="table table-sm table-bordered" style="font-size: 0.875rem">
-            <thead>
+            <thead class="table-light">
                 <tr>
                     <th>#</th>
                     <th>Tanggal</th>
@@ -148,7 +222,7 @@
                     <th>Qty</th>
                     <th>Harga</th>
                     <th>Tipe</th>
-                    <th>mengurangi saldo?</th>
+                    <th>Mengurangi Saldo?</th>
                     <th>Jumlah</th>
                     <th>Aksi</th>
                 </tr>
@@ -157,35 +231,52 @@
                 @forelse ($transactions as $trx)
                     <tr>
                         <td>{{ $loop->iteration + ($transactions->currentPage() - 1) * $transactions->perPage() }}</td>
-                        <td>{{ $trx->date }}</td>
+                        <td>{{ \Carbon\Carbon::parse($trx->date)->format('d/m/Y') }}</td>
                         <td>{{ $trx->location->name ?? '-' }}</td>
-                        <td>{{ $trx->period->date_start ?? '-' }} s/d {{ $trx->period->date_end ?? '-' }}</td>
+                        <td>
+                            @if($trx->period)
+                                {{ \Carbon\Carbon::parse($trx->period->date_start)->format('d/m/Y') }} s/d
+                                {{ \Carbon\Carbon::parse($trx->period->date_end)->format('d/m/Y') }}
+                            @else
+                                -
+                            @endif
+                        </td>
                         <td>{{ $trx->note ?? '-' }}</td>
-                        <td>{{ $trx->qty }}</td>
-                        <td>{{ number_format($trx->price) }}</td>
-                        <td>{{ $trx->type === 'kredit' ? 'masuk' : ($trx->type === 'debit' ? 'keluar' : ucfirst($trx->type)) }}
+                        <td>{{ number_format($trx->qty, 2, ',', '.') }}</td>
+                        <td>Rp {{ number_format($trx->price, 0, ',', '.') }}</td>
+                        <td>
+                            <span class="badge {{ $trx->type === 'kredit' ? 'bg-success' : 'bg-danger' }}">
+                                {{ $trx->type === 'kredit' ? 'Masuk' : 'Keluar' }}
+                            </span>
                         </td>
                         <td>
                             @if ($trx->increase && $trx->type === 'debit')
-                                Ya
+                                <span class="badge bg-warning">Ya</span>
                             @elseif (!$trx->increase && $trx->type === 'kredit')
-                                -
+                                <span class="badge bg-secondary">-</span>
                             @else
-                                Tidak
+                                <span class="badge bg-light text-dark">Tidak</span>
                             @endif
                         </td>
-                        <td>Rp {{ number_format($trx->amount, 2, ',', '.') }}</td>
                         <td>
-                            <button wire:click="edit({{ $trx->id }})" class="btn btn-sm btn-info"
-                                title="edit"><i class="bi bi-pencil-square"></i></button>
-                            <button onclick="confirmDelete({{ $trx->id }})" class="btn btn-sm btn-danger"
-                                onclick="return confirm('Yakin ingin menghapus?')" title="hapus"><i
-                                    class="bi bi-trash3-fill"></i></button>
+                            <span class="fw-bold {{ $trx->type === 'kredit' ? 'text-success' : 'text-danger' }}">
+                                Rp {{ number_format($trx->amount, 2, ',', '.') }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <button wire:click="edit({{ $trx->id }})" class="btn btn-sm btn-info" title="Edit">
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>
+                                <button onclick="confirmDelete({{ $trx->id }})" class="btn btn-sm btn-danger" title="Hapus">
+                                    <i class="bi bi-trash3-fill"></i>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="9" class="text-center">Tidak ada data transaksi</td>
+                        <td colspan="11" class="text-center">Tidak ada data transaksi</td>
                     </tr>
                 @endforelse
             </tbody>

@@ -34,24 +34,52 @@
         </div>
     </form>
 
-    <div class="row mb-2">
+    <!-- Search and Filter Section -->
+    <div class="row mb-3">
         <div class="col-md-4">
+            <label class="form-label">Cari Catatan</label>
             <input type="text" wire:model.defer="search" wire:keydown.enter="searchNow" class="form-control" placeholder="Cari catatan, tekan Enter">
         </div>
-        <div class="col-md-8">
-            <div class="row">
-                <div class="col-8">
-                    <select wire:model.defer="selectedLocation" class="form-control">
-                        <option value="">-- Pilih Lokasi, lalu klik Filter --</option>
-                        @foreach ($locations as $loc)
-                            <option value="{{ $loc->id }}">{{ $loc->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-4">
-                    <button class="btn btn-secondary" wire:click="applyLocationFilter">Filter</button>
-                </div>
-            </div>
+        <div class="col-md-4">
+            <label class="form-label">Filter Lokasi</label>
+            <select wire:model.defer="selectedLocation" class="form-control">
+                <option value="">-- Semua Lokasi --</option>
+                @foreach ($locations as $loc)
+                    <option value="{{ $loc->id }}">{{ $loc->name }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Filter Bulan</label>
+            <select wire:model.defer="selectedMonth" class="form-control">
+                <option value="">-- Semua Bulan --</option>
+                @foreach ($monthOptions as $value => $label)
+                    <option value="{{ $value }}">{{ $label }}</option>
+                @endforeach
+            </select>
+        </div>
+    </div>
+
+    <!-- Filter Action Buttons -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <button class="btn btn-primary me-2" wire:click="applyFilters">
+                <i class="bi bi-funnel"></i> Terapkan Filter
+            </button>
+            <button class="btn btn-outline-secondary me-2" wire:click="clearFilters">
+                <i class="bi bi-x-circle"></i> Bersihkan Filter
+            </button>
+            @if($filterLocation || $filterMonth)
+                <small class="text-muted">
+                    Filter aktif:
+                    @if($filterLocation)
+                        <span class="badge bg-info me-1">Lokasi: {{ $locations->find($filterLocation)->name ?? 'Unknown' }}</span>
+                    @endif
+                    @if($filterMonth)
+                        <span class="badge bg-info me-1">Bulan: {{ $monthOptions[$filterMonth] ?? $filterMonth }}</span>
+                    @endif
+                </small>
+            @endif
         </div>
     </div>
 
@@ -76,13 +104,17 @@
                 @forelse ($stocks as $item)
                     <tr>
                         <td>{{ $loop->iteration + ($stocks->currentPage() - 1) * $stocks->perPage() }}</td>
-                        <td>{{ $item->date }}</td>
+                        <td>{{ \Carbon\Carbon::parse($item->date)->format('d/m/Y') }}</td>
                         <td>{{ number_format($item->weight, 2) }}</td>
                         <td>{{ $item->location->name ?? '-' }}</td>
                         <td>{{ $item->notes ?? '-' }}</td>
                         <td>
-                            <button wire:click="edit({{ $item->id }})" class="btn btn-sm btn-info" title="edit"><i class="bi bi-pencil-square"></i></button>
-                            <button onclick="confirmDelete({{ $item->id }})" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus?')" title="hapus"><i class="bi bi-trash3-fill"></i></button>
+                            <button wire:click="edit({{ $item->id }})" class="btn btn-sm btn-info" title="edit">
+                                <i class="bi bi-pencil-square"></i>
+                            </button>
+                            <button onclick="confirmDelete({{ $item->id }})" class="btn btn-sm btn-danger" title="hapus">
+                                <i class="bi bi-trash3-fill"></i>
+                            </button>
                         </td>
                     </tr>
                 @empty
