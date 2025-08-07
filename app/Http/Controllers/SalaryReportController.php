@@ -9,6 +9,7 @@ use App\Models\Transaction;
 use App\Models\Worker;
 use App\Models\Absen;
 use App\Models\Cashbon;
+use App\Models\Stock;
 
 class SalaryReportController extends Controller
 {
@@ -33,6 +34,7 @@ class SalaryReportController extends Controller
 
         if (!$period || !$location) return [];
 
+        // Get transaction data
         $totalKredit = Transaction::where('location_id', $locationId)
             ->where('period_id', $periodId)
             ->where('type', 'kredit')
@@ -48,6 +50,11 @@ class SalaryReportController extends Controller
 
         $percentWorker = $location->percent_worker;
         $totalForWorkers = ($profit * $percentWorker) / 100;
+
+        // Get stock weight data for the selected location and period
+        $totalStockWeight = Stock::where('location_id', $locationId)
+            ->whereBetween('date', [$period->date_start, $period->date_end])
+            ->sum('weight');
 
         $workers = Worker::where('location_id', $locationId)->get();
 
@@ -78,7 +85,17 @@ class SalaryReportController extends Controller
             ];
         });
 
-        return response()->json($result);
+        return response()->json([
+            'workers' => $result,
+            'summary' => [
+                'total_kredit' => $totalKredit,
+                'total_debit' => $totalDebit,
+                'profit' => $profit,
+                'total_for_workers' => $totalForWorkers,
+                'total_stock_weight' => $totalStockWeight,
+                'location_name' => $location->name,
+                'period_range' => $period->date_start . ' s/d ' . $period->date_end,
+            ]
+        ]);
     }
-
 }

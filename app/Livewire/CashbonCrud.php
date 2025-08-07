@@ -16,6 +16,8 @@ class CashbonCrud extends Component
     public $isEdit = false;
     public $filterWorker = '';
     public $filterLocation = '';
+    public $filterMonth = '';
+    public $selectedMonth = '';
     public $totalAmount = 0;
 
     protected $paginationTheme = 'bootstrap';
@@ -29,9 +31,44 @@ class CashbonCrud extends Component
         'description' => 'nullable|string',
     ];
 
+    protected $updatesQueryString = ['filterWorker', 'filterLocation', 'filterMonth'];
+
+    public function mount()
+    {
+        $this->date = now()->toDateString();
+        $this->selectedMonth = $this->filterMonth;
+    }
+
     public function applyFilter()
     {
+        $this->filterMonth = $this->selectedMonth;
         $this->resetPage();
+    }
+
+    public function clearFilters()
+    {
+        $this->filterWorker = '';
+        $this->filterLocation = '';
+        $this->filterMonth = '';
+        $this->selectedMonth = '';
+        $this->resetPage();
+    }
+
+    public function getMonthOptions()
+    {
+        $months = [];
+        $currentYear = now()->year;
+        $startYear = $currentYear - 2; // Show last 2 years + current year
+
+        for ($year = $startYear; $year <= $currentYear; $year++) {
+            for ($month = 1; $month <= 12; $month++) {
+                $monthValue = sprintf('%04d-%02d', $year, $month);
+                $monthLabel = \Carbon\Carbon::createFromDate($year, $month, 1)->format('F Y');
+                $months[$monthValue] = $monthLabel;
+            }
+        }
+
+        return array_reverse($months, true); // Show newest first
     }
 
     public function render()
@@ -46,12 +83,18 @@ class CashbonCrud extends Component
             $query->where('location_id', $this->filterLocation);
         }
 
+        if ($this->filterMonth !== '') {
+            $query->whereYear('date', substr($this->filterMonth, 0, 4))
+                  ->whereMonth('date', substr($this->filterMonth, 5, 2));
+        }
+
         $this->totalAmount = $query->sum('amount');
 
         return view('livewire.cashbon-crud', [
             'cashbons' => $query->latest()->paginate(10),
             'workers' => Worker::orderBy('name')->get(),
             'locations' => Location::orderBy('name')->get(),
+            'monthOptions' => $this->getMonthOptions(),
         ]);
     }
 
@@ -64,7 +107,6 @@ class CashbonCrud extends Component
     {
         $this->resetPage();
     }
-
 
     public function store()
     {
@@ -81,6 +123,7 @@ class CashbonCrud extends Component
     public function resetForm()
     {
         $this->reset(['cashbonId', 'worker_id', 'location_id', 'date', 'amount', 'description', 'status', 'isEdit']);
+        $this->date = now()->toDateString();
     }
 
     public function edit($id)
@@ -118,7 +161,7 @@ class CashbonCrud extends Component
             $cashbon->status = 'paid';
             $cashbon->save();
 
-            session()->flash('success', 'Status berhasil diubah menjadi Paid.');
+            $this->dispatch('toast:success', message: 'Status berhasil diubah menjadi Paid.');
         }
     }
 
@@ -130,13 +173,13 @@ class CashbonCrud extends Component
             $cashbon->status = 'unpaid';
             $cashbon->save();
 
-            session()->flash('success', 'Status berhasil diubah menjadi Unpaid.');
+            $this->dispatch('toast:success', message: 'Status berhasil diubah menjadi Unpaid.');
         }
     }
-
 
     public function resetInput()
     {
         $this->reset(['cashbonId', 'worker_id', 'location_id', 'date', 'amount', 'description', 'status', 'isEdit']);
+        $this->date = now()->toDateString();
     }
 }
